@@ -1,0 +1,30 @@
+{
+  "name": "whistle.qinglong",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm run build && w2 run",
+    "clean": "npx rimraf -rf index.js lib router",
+    "build": "npm run clean && npx tsc --build ./src/tsconfig.json"
+  },
+  "author": "kongbg",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/koa-bodyparser": "^4.3.7",
+    "@types/koa-static": "^4.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "koa-static": "^5.0.0"
+  }
+}
