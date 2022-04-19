@@ -1,22 +1,18 @@
 // 库
 import * as http from 'http';
+import { findData } from './ql';
 
 export default function (server: http.Server): void {
     // 监听request请求
-    server.on('request', (req: any, res) => {
-        const {
-            originalReq: {
-                ruleValue, // 配置的规则
-            },
-        } = req;
-
-        // 不是内置规则，则直接返回
-        if (ruleValue !== 'none') {
-            req.passThrough();
-            return;
+    server.on('request', (req: any, res: any) => {
+        // filter
+        const ruleValue = req.originalReq.ruleValue; // 配置的规则
+        console.log('ruleValue:', ruleValue)
+        // 是内置规则，处理数据
+        if (ruleValue === 'none') {
+            console.log('是内置规则，处理数据')
+            findData(req, res);
         }
-
-        // 直接修改响应返回
-        res.end('Hello World');
+        return req.passThrough();
     });
 }
