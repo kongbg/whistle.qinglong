@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as http from 'http';
 import * as KoaStatic from 'koa-static';
 import * as KoaBodyParser from 'koa-bodyparser';
-
 interface WhistleOptions {
     storage: {
         setProperty: Function;
