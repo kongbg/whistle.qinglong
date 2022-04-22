@@ -21,7 +21,7 @@ class Page {
             Page.showDialog(-1);
         });
         // 操作按钮事件
-        $('.main tbody').on('click', 'a', function operateEvent() {
+        $('#main tbody').on('click', 'a', function operateEvent() {
             const index = $(this).parents('tr').index() - 1;
             if ($(this).data('type') === 'modify') {
                 Page.showDialog(index);
@@ -68,10 +68,10 @@ class Page {
         !isInit && Page.update();
         const tpl = $('#item').html();
 
-        $('tbody tr:gt(0)').remove();
-        $('.none')[list.length === 0 ? 'removeClass' : 'addClass']('hide');
+        $('#main tbody tr:gt(0)').remove();
+        $('#main .none')[list.length === 0 ? 'removeClass' : 'addClass']('hide');
         list.forEach((item) => {
-            $('tbody').append(tpl.replace('{url}', item.url).replace('{file}', item.file));
+            $('#main tbody').append(tpl.replace('{url}', item.url).replace('{file}', item.file));
         });
     }
     static list() {
@@ -98,16 +98,17 @@ class Page {
     // 绑定事件
     static bindEvent2() {
         // 新增配置按钮事件
-        $('.config .btn').on('click', () => {
+        $('#config .btn').on('click', () => {
+            if (configs.length>0) return;
             Page.showDialog2(-1);
         });
         // 操作按钮事件
-        $('.config tbody').on('click', 'a', function operateEvent() {
+        $('#config tbody').on('click', 'a', function operateEvent() {
             const index = $(this).parents('tr').index() - 1;
             if ($(this).data('type') === 'modify') {
                 Page.showDialog2(index);
             } else {
-                list.splice(index, 1);
+                configs.splice(index, 1);
                 Page.render2();
             }
         });
@@ -127,8 +128,8 @@ class Page {
             } else {
                 configs[index] = result;
             }
-            Page.render();
-            $('#dialog').addClass('hide');
+            Page.render2();
+            $('#dialog2').addClass('hide');
         });
         // 弹框取消按钮事件
         $('#dialog2 .cancel').off().on('click', () => {
@@ -137,8 +138,8 @@ class Page {
     }
     static showDialog2(index) {
         if (index >= 0) {
-            $($('#dialog2 input')[0]).val(list[index].url);
-            $($('#dialog2 input')[1]).val(list[index].file);
+            $($('#dialog2 input')[0]).val(configs[index].client_id);
+            $($('#dialog2 input')[1]).val(configs[index].client_secret);
         } else {
             $('#dialog2 input').val('');
         }
@@ -149,10 +150,10 @@ class Page {
         !isInit && Page.updateConfig();
         const tpl = $('#item2').html();
 
-        $('tbody tr:gt(0)').remove();
-        $('.none')[list.length === 0 ? 'removeClass' : 'addClass']('hide');
-        list.forEach((item) => {
-            $('tbody').append(tpl.replace('{client_id}', item.client_id).replace('{client_secret}', item.client_secret));
+        $('#config tbody tr:gt(0)').remove();
+        $('#config .none')[configs.length === 0 ? 'removeClass' : 'addClass']('hide');
+        configs.forEach((item) => {
+            $('#config tbody').append(tpl.replace('{client_id}', item.client_id).replace('{client_secret}', item.client_secret));
         });
     }
     static configs() {
