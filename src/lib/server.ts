@@ -5,6 +5,7 @@ import { handle } from './ql';
 export default function (server: http.Server,  ctx: any): void {
     // 监听request请求
     server.on('request', (req: any, res: any) => {
+        // console.log("server.on('request')")
         // filter
         // const ruleValue = req.originalReq.ruleValue; // 配置的规则
         const storage = ctx.storage;
