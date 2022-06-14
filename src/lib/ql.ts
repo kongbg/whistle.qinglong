@@ -1,43 +1,30 @@
 
-const http = require('http');
+const axios = require('axios');
 const querystring = require('querystring');
 let done = 0;
+let timestamp = 0;
 
 /**
  * 处理请求头，响应
  * @param ctx [koa的Context对象]
  */
-export function handle(req: any, res: any, storage: any): void {
-    if (done == 2) {
-        return;
-    }
+const handle = async (req: any, res: any, storage: any, method: any) => {
     const {host, cookie} = req.originalReq.headers;
     const xForwardedFor = req.originalReq.headers['x-forwarded-for'];
-    const post_data = { host, cookie, xForwardedFor };
-    var content = querystring.stringify(post_data);
-    const options = {
-        hostname: '127.0.0.1',
-        port: 8300,
-        path: '/api/handlKsjsb',
-        method: 'POST',
+    const options = { host, cookie, xForwardedFor, method };
+
+    const result = await axios({
+        url: `http://127.0.0.1:8300/api/handlWhistle`,
+        method: 'post',
+        data: querystring.stringify(options),
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
-    };
-    const myreq: any = http.request(options, function (myres: any) {
-        myres.setEncoding('utf8');
-        myres.on('data', function (chunk: any) {
-            console.log('BODY: ' + chunk);
-            if (chunk.code == 0) {
-                done = chunk.done;
-            }
-        });
     });
-      
-    myreq.on('error', function (e: any) {
-        console.log('problem with request: ' + e.message);
-    });
-    // write data to request body  
-    myreq.write(content);
-    myreq.end();
+    console.log('result:',result.data)
+    return result.data;
+}
+
+export {
+    handle,
 }
