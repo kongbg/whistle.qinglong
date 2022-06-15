@@ -3,22 +3,14 @@ import * as http from 'http';
 const axios = require('axios');
 import { handle } from './ql';
 const async = require('async');
-let task = 0;
-
 let config:any = null;
-
 
 const queue = async.queue(async (params:any, completed:any) => {
     const { req, res, storage } = params;
-    console.log("当前正在处理");
-    console.log('异步处理其他事情')
     const result:any = await handle(req, res, storage, config.table);
-    const remaining = queue.length();
-    console.log('处理完成了，执行回调:', result)
+    console.log('处理完成了，执行回调code:', result.code)
     if (result.code == 0) {
-        completed(null, {remaining});
-    } else {
-        completed(result.data.code, {remaining});
+        queue.kill()
     }
 }, 1);
 
@@ -26,7 +18,6 @@ const queue = async.queue(async (params:any, completed:any) => {
 
 
 function checkUrl (url:String) {
-    console.log('checkUrl:', url)
     const filterList = config.host || [];
     if (!filterList) {
         return true;
@@ -45,7 +36,7 @@ function checkUrl (url:String) {
     return flag;
 }
 function needConfig () {
-    return (!config || config.status == 0 || config && config.status == 1 && (new Date().getTime() - config.timestamp) > 180 * 1000);
+    return (!config || config?.status == 0 || config && config?.status == 1 && (new Date().getTime() - config?.timestamp) > 180 * 1000);
 }
 function canWhistle () {
     return (config.status == 1 && (new Date().getTime() - config.timestamp) < 180 * 1000);
@@ -57,15 +48,13 @@ export default async function  (server: http.Server,  ctx: any) {
         console.log('监听request请求')
         const { url } = req.originalReq;
         const { storage } = ctx;
-
         // 180s内不重复请求抓包配置
         if (needConfig()) {
             const result = await axios({
                 url: 'http://127.0.0.1:8300/api/getWhistleConfig',                    
                 method: 'get'
             });
-            config = result?.data?.data && result?.data?.data[0];
-            console.log('config:', config)
+            config = result?.data?.data || {status: 0};
         }
 
         // 当前是否是抓包模式
@@ -78,13 +67,7 @@ export default async function  (server: http.Server,  ctx: any) {
             return req.passThrough();
         }
 
-        queue.push({req, res, storage}, (error: any, params: any)=>{
-            if(error){
-             console.log(`出错了哦`, error, params);
-            }else {
-             console.log(`任务完成. 还有${params.remaining}个 `);
-           }
-        })
+        queue.push({req, res, storage}, (error: any, params: any)=>{ })
         return req.passThrough();
     });
 }
